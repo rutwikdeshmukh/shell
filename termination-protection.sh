@@ -26,8 +26,10 @@ for StackName in $StackNames; do
   updated_termination_protection_status=$(aws cloudformation describe-stacks --stack-name "$StackName" | jq -r '.Stacks[0].EnableTerminationProtection')
   echo "Updated Termination Protection Status: $updated_termination_protection_status"
 
-  if [ "yes" == "$delete_stacks" ]; then
+  if [ "yes" == "$delete_stacks" ] && [ "false" == "$updated_termination_protection_status" ] ; then
     aws cloudformation delete-stack --stack-name "$StackName"
     echo "Stack $StackName has been deleted."
+  else
+    echo "Stacks cannot be deleted as the Termination Protection is ENABLED"
   fi
 done
